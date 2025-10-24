@@ -1,0 +1,36 @@
+name: Daily Press Review Update
+
+on:
+  schedule:
+    # Exécution quotidienne à 8h00 UTC (ajuster l'heure selon le besoin)
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies (if any)
+        # Aucune dépendance externe pour ce script, mais à décommenter si besoin
+        # run: pip install requests
+
+      - name: Generate Press Review
+        run: python press_review_generator.py
+
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          # Renomme le fichier HTML généré en index.html pour l'hébergement statique
+          commit_message: "Automated: Update daily press review"
+          file_pattern: index.html
+          branch: main # Assurez-vous que c'est le nom de votre branche principale (main ou master)
+
